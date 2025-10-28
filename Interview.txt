@@ -1,0 +1,3 @@
+software developer,kurt,2025-10-13,8:00,gmeet
+Data Analyst,asdad,2025-10-12,14:00,Zoom
+software developer,renz,,2025-10-12,Zoom
