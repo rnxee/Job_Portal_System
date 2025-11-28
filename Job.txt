@@ -1,0 +1,3 @@
+"software developer","Microsoft","United States","200000.0","paid overtime, insurance","java, python","bill"
+"Data Analyst","Google","United States","200000.0","Insurance","python, sql, excel","renz"
+"Program Assistant","Venngage","Canada","20000.0","Insurance","organized, multi-tasker","renz"
