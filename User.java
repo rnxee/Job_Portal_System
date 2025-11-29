@@ -1,8 +1,12 @@
 import java.util.*;
 import java.util.Scanner;
 
+/*  Abstraction:
+    In here we made the User class as abstract so that all the
+    Subclasses of the User class can inherit the methods and attributes,
+    while also requiring the subclasses to implement their own abstract method */
 // User class
-public class User {
+public abstract class User {
     Scanner scanner = new Scanner(System.in);
     protected String user;
     protected String password;
@@ -12,12 +16,11 @@ public class User {
         this.password = password;
     }
 
+    /* Abstract Method */
+    public abstract void showMenu(List<Job> jobs, List<Interview> interviews, List<Employer> employers);
+
     public String getUser() {
         return user;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public boolean validatePassword(String password) {
@@ -31,6 +34,39 @@ class Employer extends User {
 
     public Employer(String user, String password) {
         super(user, password);
+    }
+
+    @Override
+    public void showMenu(List<Job> jobs, List<Interview> interviews, List<Employer> employers) {
+        while (true) {
+            System.out.println("\n--- Employer Menu ---");
+            System.out.println("1. Post a Job");
+            System.out.println("2. View Applicants");
+            System.out.println("3. Schedule Interview");
+            System.out.println("0. Logout");
+
+            System.out.print("Choose option: ");
+            int choice;
+            while (true) {
+                String line = scanner.nextLine();
+                try {
+                    choice = Integer.parseInt(line.trim());
+                    break;
+                } catch (NumberFormatException nfe) {
+                    System.out.print("Invalid input. Please enter a number: ");
+                }
+            }
+
+            switch (choice) {
+                case 1 -> postJob(jobs);
+                case 2 -> viewApplicants();
+                case 3 -> scheduleInterview(interviews, jobs);
+                case 0 -> {
+                    return;
+                }
+                default -> System.out.println("Invalid choice!");
+            }
+        }
     }
 
     public List<Job> getJobsPosted() {
@@ -130,12 +166,46 @@ class Jobseeker extends User {
         this.resume = null;
     }
 
-    public Resume getResumeObject() {
-        return resume;
+    @Override
+    public void showMenu(List<Job> jobs, List<Interview> interviews, List<Employer> employers) {
+        while (true) {
+            System.out.println("\n--- Job Seeker Menu ---");
+            System.out.println("1. View All Jobs");
+            System.out.println("2. Apply for a Job");
+            System.out.println("3. Find Suggested Jobs");
+            System.out.println("4. View My Resume");
+            System.out.println("5. View My Interviews");
+            System.out.println("0. Logout");
+
+            System.out.print("Choose option: ");
+            int choice;
+            while (true) {
+                String line = scanner.nextLine();
+                try {
+                    choice = Integer.parseInt(line.trim());
+                    break;
+                } catch (NumberFormatException nfe) {
+                    System.out.print("Invalid input. Please enter a number: ");
+                }
+            }
+
+            switch (choice) {
+                case 1 -> viewJobs(jobs);
+                case 2 -> applyForJob(employers);
+                case 3 -> matchJobs(jobs);
+                case 4 -> viewResume();
+                case 5 -> viewInterviews(interviews);
+
+                case 0 -> {
+                    return;
+                }
+                default -> System.out.println("Invalid choice!");
+            }
+        }
     }
 
-    public String getResume() {
-        return resume.toString();
+    public Resume getResumeObject() {
+        return resume;
     }
 
     public void setResume(Resume resume) {
@@ -149,18 +219,25 @@ class Jobseeker extends User {
         System.out.print("Skills Keywords (comma-separated, e.g., Java, SQL, AWS): ");
         String skills = scanner.nextLine();
         System.out.print("Experience (Years):");
-        int experience;
-        while (true) {
-            String sExp = scanner.nextLine();
-            try {
-                experience = Integer.parseInt(sExp);
-                break;
-            } catch (NumberFormatException nfe) {
-                System.out.print("Invalid number. Enter Experience (Years) as an integer: ");
+        String exp = scanner.nextLine();
+
+        Resume newResume;
+        if (exp.isEmpty()) {
+            newResume = new Resume(education, skills);
+        }
+        else {
+            int experience;
+            while (true) {
+                try {
+                    experience = Integer.parseInt(exp);
+                    break;
+                } catch (NumberFormatException nfe) {
+                    System.out.print("Invalid number. Enter Experience (Years) as an integer: ");
+                }
             }
+            newResume = new Resume(education, skills, experience);
         }
 
-        Resume newResume = new Resume(education, skills, experience);
         this.setResume(newResume);
         System.out.println("Resume created and attached to " + this.user + ".");
     }
@@ -171,7 +248,7 @@ class Jobseeker extends User {
         }
     }
     // apply for job
-    public void applyForJob(List<Employer> employers, List<Job> jobs) {
+    public void applyForJob(List<Employer> employers) {
         System.out.print("Enter Job Title to apply for: ");
         String jobTitle = scanner.nextLine();
 
