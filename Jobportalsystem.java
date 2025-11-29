@@ -25,7 +25,7 @@ public class Jobportalsystem {
     // Main menu
     public void start() {
         while (true) {
-            System.out.println("\n--- Job Portal ---");
+            System.out.println("--- Job Portal ---");
             System.out.println("1. Register as Employer");
             System.out.println("2. Register as Job Seeker");
             System.out.println("3. Login as Employer");
@@ -37,6 +37,7 @@ public class Jobportalsystem {
                 String line = scanner.nextLine();
                 try {
                     choice = Integer.parseInt(line.trim());
+                    clearScreen();
                     break;
                 } catch (NumberFormatException nfe) {
                     System.out.print("\nInvalid input. Please enter a number: ");
@@ -66,7 +67,8 @@ public class Jobportalsystem {
         Employer employer = new Employer(user, password);
         employers.add(employer);
         Filehandler.saveEmployers(EMPLOYER_FILE, employers);
-        System.out.println("Employer registered successfully!");
+        System.out.print("\nEmployer registered successfully!");
+        scanner.nextLine(); clearScreen();
     }
 
     private void registerJobSeeker() {
@@ -80,7 +82,8 @@ public class Jobportalsystem {
 
         jobSeekers.add(seeker);
         Filehandler.saveJobSeekers(JOBSEEKER_FILE, jobSeekers);
-        System.out.println("Job Seeker registered successfully!");
+        System.out.print("Job Seeker registered successfully!");
+        scanner.nextLine();  clearScreen();
     }
     // Logins
     private void loginEmployer() {
@@ -89,10 +92,12 @@ public class Jobportalsystem {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        for (Employer e : employers) {
-            if (e.getUser().equals(user) && e.validatePassword(password)) {
+        for (Employer employer : employers) {
+            if (employer.getUser().equals(user) && employer.validatePassword(password)) {
+                clearScreen();
                 System.out.println("Welcome " + user + "!");
-                employerMenu(e);
+                employer.showMenu(jobs, interviews, employers);
+                saveData();
                 return;
             }
         }
@@ -105,85 +110,17 @@ public class Jobportalsystem {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        for (Jobseeker js : jobSeekers) {
-            if (js.getUser().equals(user) && js.validatePassword(password)) {
+        for (Jobseeker seeker : jobSeekers) {
+            if (seeker.getUser().equals(user) && seeker.validatePassword(password)) {
                 System.out.println("Welcome " + user + "!");
-                jobSeekerMenu(js);
+                seeker.showMenu(jobs, interviews, employers);
+                saveData();
                 return;
             }
         }
         System.out.println("Invalid!");
     }
-    // Employer Menu
-    private void employerMenu(Employer employer) {
-        while (true) {
-            System.out.println("\n--- Employer Menu ---");
-            System.out.println("1. Post a Job");
-            System.out.println("2. View Applicants");
-            System.out.println("3. Schedule Interview");
-            System.out.println("0. Logout");
-            System.out.print("Choose option: ");
-            int choice;
-            while (true) {
-                String line = scanner.nextLine();
-                try {
-                    choice = Integer.parseInt(line.trim());
-                    break;
-                } catch (NumberFormatException nfe) {
-                    System.out.print("Invalid input. Please enter a number: ");
-                }
-            }
 
-            switch (choice) {
-                case 1 -> employer.postJob(jobs);
-                case 2 -> employer.viewApplicants();
-                case 3 -> employer.scheduleInterview(interviews, jobs);
-                case 0 -> {
-                    saveData();
-                    return;
-                }
-                default -> System.out.println("Invalid choice!");
-            }
-        }
-    }
-    // Job Seeker Menu
-    private void jobSeekerMenu(Jobseeker seeker) {
-        while (true) {
-            System.out.println("\n--- Job Seeker Menu ---");
-            System.out.println("1. View All Jobs");
-            System.out.println("2. Apply for a Job");
-            System.out.println("3. Find Suggested Jobs");
-            System.out.println("4. View My Resume");
-            System.out.println("5. View My Interviews");
-            System.out.println("0. Logout");
-
-            System.out.print("Choose option: ");
-            int choice;
-            while (true) {
-                String line = scanner.nextLine();
-                try {
-                    choice = Integer.parseInt(line.trim());
-                    break;
-                } catch (NumberFormatException nfe) {
-                    System.out.print("Invalid input. Please enter a number: ");
-                }
-            }
-
-            switch (choice) {
-                case 1 -> seeker.viewJobs(jobs);
-                case 2 -> seeker.applyForJob(employers, jobs);
-                case 3 -> seeker.matchJobs(jobs);
-                case 4 -> seeker.viewResume();
-                case 5 -> seeker.viewInterviews(interviews);
-
-                case 0 -> {
-                    saveData();
-                    return;
-                }
-                default -> System.out.println("Invalid choice!");
-            }
-        }
-    }
     // Save all data to files
     private void saveData() {
         Filehandler.saveEmployers(EMPLOYER_FILE, employers);
@@ -193,8 +130,14 @@ public class Jobportalsystem {
         Filehandler.saveInterviews("Interview.txt", interviews);
     }
 
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
     public static void main(String[] args) {
         Jobportalsystem system = new Jobportalsystem();
+        clearScreen();
         system.start();
     }
 }
